@@ -41,3 +41,5 @@ thop  # FLOPs computation
 
 
 streamlit
+--extra-index-url https://test.pypi.org/simple/
+image-label

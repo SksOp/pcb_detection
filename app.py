@@ -5,8 +5,41 @@ import sys
 from PIL import Image
 import pandas as pd
 import matplotlib.pyplot as plt
+from image_label import image_label_component,load_image,img_to_base64
+
 
 st.set_page_config(page_title="PCB detection", layout="wide",page_icon="assets/icon.png")
+
+
+def format_change(path):
+    import random
+
+    out=[]
+    with open (path) as f:
+        result=f.readlines()[:-1]
+    for a in result:  
+        lis=list(map(float,a.split(" ")))
+        
+        names= ["missing_hole",
+        "mouse_bite",
+        "open_circuit",
+        "short",
+        "spur",
+        "spurious_copper"]
+        
+        dict1 = {"type": "RECTANGLE"}
+        dict1["x"]=(lis[1]-(lis[3]/2))*100
+        dict1["y"]=(lis[2]-(lis[4]/2))*100
+        dict1['width']=lis[3]*100
+        dict1['height']=lis[4]*100
+        dict2={"text": names[int(lis[0])]}
+        # path="../data"
+        dict2["id"]=random.random()
+        out_dict={"geometry":dict1, "data":dict2}
+        
+        out.append(out_dict)
+        # print(out)
+    return(out)
 
 def run_image_processing(file):
     # Define your image processing logic here
@@ -24,7 +57,7 @@ def run_image_processing(file):
     try:
         python_executable = sys.executable
         #add iamge size
-        subprocess.run([python_executable , detectorScript, '--source', filepath, '--weights', weights, '--conf', '0.25', '--name', 'detect', '--exist-ok', '--project', cacheAbsolutePath, "--no-trace"])
+        subprocess.run([python_executable , detectorScript, '--source', filepath, '--weights', weights, '--conf', '0.25', '--name', 'detect', '--exist-ok', '--project', cacheAbsolutePath, "--no-trace" ,"--save-txt", ])
     
         # subprocess.run([python_executable, detectorScript, "--weights", weights, "--source", filepath, "--img-size", "416", "--save-txt", "--save-conf", "--save-crop", "--nosave", "--exist-ok", "--project", cacheAbsolutePath, "--name", "detect"])
     except subprocess.CalledProcessError as e:
@@ -61,14 +94,22 @@ def process_uploaded_image(uploaded_file):
         os.makedirs(saveDir)
     
 
-    fileExtension=uploaded_file.name.split(".")[-1]
-    fileName = "1."+fileExtension
+    # fileExtension=uploaded_file.name.split(".")[-1]
+    # fileName = "1."+fileExtension
+    fileName = "1.jpg"
     savePath = os.path.join(saveDir, fileName)
 
     with open(savePath, "wb") as f:
         f.write(uploaded_file.getbuffer())
     
     resize_image(savePath, 1000)
+    # //removing last detection label folder
+    
+    labelPath = os.path.join(os.getcwd(),"cache/detect/labels/1.txt")
+    
+    if os.path.exists(labelPath):
+        os.remove(labelPath)
+
     reponse = run_image_processing(fileName)
 
     if not reponse:
@@ -76,13 +117,14 @@ def process_uploaded_image(uploaded_file):
 
     output_filepath=os.path.join(os.getcwd(),"cache/detect",fileName)
     col1,col2 = st.columns(2)
-
+    
     with col1:
         st.image(output_filepath, caption="Processed Image")
     with col2:
         st.image(uploaded_file, caption="Original Image")
-
     return True
+
+
 
 def handle_detection_ui():
     col1,col2= st.columns(2)
@@ -92,13 +134,39 @@ def handle_detection_ui():
         response = False
         buttonPressed = st.button("Process Image",key=f"buton@fileUplaod")
     if buttonPressed and uploaded_file is not None:
-        # saving this file to a temporary location
-        response = process_uploaded_image(uploaded_file)
+        t1,t2 = st.tabs(["Processed Image","Edit Image"])
+        with t1:
+            # saving this file to a temporary location
+            response = process_uploaded_image(uploaded_file)
+        with t2:
+            handle_last_detection_edit("hihi")
+        if response:
+            st.success("Image processed successfully")
+        
     with col2:
         if not response and uploaded_file:
             st.caption("Uploaded Image")
             st.image(uploaded_file)
+    
+    return uploaded_file,response
+        # if response:
+        #     edit = st.button("edit")
+        #     if edit:
+        #         label=os.path.join(os.getcwd(),"cache/detect/labels/1.txt")
+        #         detectedAnnotations = format_change(label)
+        #         st.write(detectedAnnotations)
+            # annotations = image_label_component(image=uploaded_file,labels=["Missing Holes","Mouse Bites" ,"Open Circuit", "Short","Spur","Spurious Copper"],detectedAnotations=detectedAnnotations,key="image-label-test")
 
+def handle_last_detection_edit(key=None):
+    
+    label=os.path.join(os.getcwd(),"cache/detect/labels/1.txt")
+    imagePath = os.path.join(os.getcwd(),"cache/1.jpg")
+    detectedAnnotations = format_change(label)
+    image = load_image(imagePath)
+    image_str = img_to_base64(image)
+    image_label_component(key=key,image=image_str,labels=["Missing Holes","Mouse Bites" ,"Open Circuit", "Short","Spur","Spurious Copper"],detectedAnotations=detectedAnnotations)
+
+    
 def load_heading():
     st.image("assets/head.png")
     st.markdown("### ⚡️ PCB Fault Identification Application")
@@ -143,11 +211,15 @@ def load_info():
         st.image("assets/pr.png", caption="Precision Recall")
 
 def main():
-    tab1, tab2 = st.tabs(["About", "Try it out"])
+    tab1, tab2= st.tabs(["About", "Try it out"])
     with tab1:
+        
         load_heading()
         load_info()
     with tab2:
-        handle_detection_ui()
+        uploadedfile,response =  handle_detection_ui()
+
+            # st.write(format_change("./cache/detect/labels/1.jpg"))
+    #     annotations = image_label_component(image="assets/test.jpg",labels=["Missing Holes","Mouse Bites" ,"Open Circuit", "Short","Spur","Spurious Copper"],detectedAnotations=[],key="image-label-test")
 if __name__ == "__main__":
     main()
