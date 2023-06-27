@@ -16,7 +16,8 @@ def format_change(path):
 
     out=[]
     with open (path) as f:
-        result=f.readlines()[:-1]
+        result = [line for line in f.readlines() if line.strip()]
+
     for a in result:  
         lis=list(map(float,a.split(" ")))
         
@@ -139,7 +140,7 @@ def handle_detection_ui():
             # saving this file to a temporary location
             response = process_uploaded_image(uploaded_file)
         with t2:
-            handle_last_detection_edit("hihi")
+            handle_last_detection_edit(key = "hihi")
         if response:
             st.success("Image processed successfully")
         
