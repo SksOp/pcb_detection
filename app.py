@@ -6,7 +6,7 @@ from PIL import Image
 import pandas as pd
 import matplotlib.pyplot as plt
 from image_label import image_label_component,load_image,img_to_base64
-
+from table import create_df
 
 st.set_page_config(page_title="PCB detection", layout="wide",page_icon="assets/icon.png")
 
@@ -21,12 +21,12 @@ def format_change(path):
     for a in result:  
         lis=list(map(float,a.split(" ")))
         
-        names= ["missing_hole",
-        "mouse_bite",
-        "open_circuit",
-        "short",
-        "spur",
-        "spurious_copper"]
+        names= ["Missing Holes",
+        "Mouse Bites",
+        "Open Circuit",
+        "Short",
+        "Spur",
+        "Spurious Copper"]
         
         dict1 = {"type": "RECTANGLE"}
         dict1["x"]=(lis[1]-(lis[3]/2))*100
@@ -126,7 +126,8 @@ def process_uploaded_image(uploaded_file):
     with col1:
         st.image(output_filepath, caption="Processed Image")
     with col2:
-        st.image(uploaded_file, caption="Original Image")
+        df=create_df()
+        st.dataframe(df)
     return True
 
 
