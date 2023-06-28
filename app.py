@@ -87,6 +87,8 @@ def resize_image(image_path, max_width):
     # Save the resized image
     resized_image.save(image_path)
 
+
+
 def process_uploaded_image(uploaded_file):
     
     saveDir = os.path.join(os.getcwd(), 'cache')
@@ -95,15 +97,16 @@ def process_uploaded_image(uploaded_file):
         os.makedirs(saveDir)
     
 
-    # fileExtension=uploaded_file.name.split(".")[-1]
-    # fileName = "1."+fileExtension
-    fileName = "1.jpg"
+    fileExtension=uploaded_file.name.split(".")[-1]
+    fileName = "1."+fileExtension
+
     savePath = os.path.join(saveDir, fileName)
 
     with open(savePath, "wb") as f:
         f.write(uploaded_file.getbuffer())
     
-    resize_image(savePath, 1000)
+    # resize_image(savePath, 1000)
+    
     # //removing last detection label folder
     
     labelPath = os.path.join(os.getcwd(),"cache/detect/labels/1.txt")
@@ -117,6 +120,7 @@ def process_uploaded_image(uploaded_file):
         return False
 
     output_filepath=os.path.join(os.getcwd(),"cache/detect",fileName)
+    st.info("If bounding boxes are not visible, go to edit tab")
     col1,col2 = st.columns(2)
     
     with col1:
@@ -139,8 +143,10 @@ def handle_detection_ui():
         with t1:
             # saving this file to a temporary location
             response = process_uploaded_image(uploaded_file)
+            st.caption("If bounding boxes are not visible, go to edit tab")
         with t2:
-            handle_last_detection_edit(key = "hihi")
+            handle_last_detection_edit(uploaded_file,key = "hihi")
+
         if response:
             st.success("Image processed successfully")
         
@@ -158,10 +164,11 @@ def handle_detection_ui():
         #         st.write(detectedAnnotations)
             # annotations = image_label_component(image=uploaded_file,labels=["Missing Holes","Mouse Bites" ,"Open Circuit", "Short","Spur","Spurious Copper"],detectedAnotations=detectedAnnotations,key="image-label-test")
 
-def handle_last_detection_edit(key=None):
-    
+def handle_last_detection_edit(uploaded_file,key=None):
+    fileExtension=uploaded_file.name.split(".")[-1]
+    fileName = "1."+fileExtension
     label=os.path.join(os.getcwd(),"cache/detect/labels/1.txt")
-    imagePath = os.path.join(os.getcwd(),"cache/1.jpg")
+    imagePath = os.path.join(os.getcwd(),"cache",fileName)
     detectedAnnotations = format_change(label)
     image = load_image(imagePath)
     image_str = img_to_base64(image)
