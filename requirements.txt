@@ -42,4 +42,4 @@ thop  # FLOPs computation
 
 streamlit
 
-image-label==2.4.2
+image-label==2.4.3

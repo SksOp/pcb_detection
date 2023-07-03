@@ -121,15 +121,8 @@ def process_uploaded_image(uploaded_file):
 
     output_filepath=os.path.join(os.getcwd(),"cache/detect",fileName)
     st.info("If bounding boxes are not visible, go to edit tab")
-    col1,col2 = st.columns(2)
-    
-    with col1:
-        st.image(output_filepath, caption="Processed Image")
-    with col2:
-        df=create_df()
-        st.dataframe(df)
+    handle_last_detection_edit(uploaded_file,key="last-detection")
     return True
-
 
 
 def handle_detection_ui():
@@ -140,13 +133,10 @@ def handle_detection_ui():
         response = False
         buttonPressed = st.button("Process Image",key=f"buton@fileUplaod")
     if buttonPressed and uploaded_file is not None:
-        t1,t2 = st.tabs(["Processed Image","Edit Image"])
-        with t1:
-            # saving this file to a temporary location
-            response = process_uploaded_image(uploaded_file)
-            st.caption("If bounding boxes are not visible, go to edit tab")
-        with t2:
-            handle_last_detection_edit(uploaded_file,key = "hihi")
+
+        # saving this file to a temporary location
+        response = process_uploaded_image(uploaded_file)
+        st.caption("If bounding boxes are not visible, go to edit tab")
 
         if response:
             st.success("Image processed successfully")
