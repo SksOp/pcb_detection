@@ -209,14 +209,33 @@ def load_info():
     with pr :
         st.image("assets/pr.png", caption="Precision Recall")
 
+def more():
+
+    st.markdown("### Github Repository")
+    st.markdown("> [Click here](https://github.com/SksOp/pcb_detection)")
+
+    st.markdown("---")
+    st.markdown("### Wandb Dashboard")
+    st.markdown("> [Click here](https://api.wandb.ai/links/tanish-jdh2020/bymjui36)")
+
+    st.markdown("---")
+    st.markdown("### YOLOv7")
+    st.markdown("> [Click here](https://github.com/WongKinYiu/yolov7)")
+
+    st.markdown("---")
+    st.markdown("### Label Img")
+    st.markdown("> A package created for labeling images in streamlit as a part of this project. [PyPi Link](https://pypi.org/project/image-label/) and [Github Link](https://github.com/SksOp/image_label)")
+
 def main():
-    tab1, tab2= st.tabs(["About", "Try it out"])
+    tab1, tab2, tab3= st.tabs(["Introduction", "Try it out","More Details"])
     with tab1:
         
         load_heading()
         load_info()
     with tab2:
         uploadedfile,response =  handle_detection_ui()
+    with tab3:
+        more()
 
             # st.write(format_change("./cache/detect/labels/1.jpg"))
     #     annotations = image_label_component(image="assets/test.jpg",labels=["Missing Holes","Mouse Bites" ,"Open Circuit", "Short","Spur","Spurious Copper"],detectedAnotations=[],key="image-label-test")
