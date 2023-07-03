@@ -120,7 +120,7 @@ def process_uploaded_image(uploaded_file):
         return False
 
     output_filepath=os.path.join(os.getcwd(),"cache/detect",fileName)
-    st.info("If bounding boxes are not visible, go to edit tab")
+    # st.info("If bounding boxes are not visible, go to edit tab")
     handle_last_detection_edit(uploaded_file,key="last-detection")
     return True
 
