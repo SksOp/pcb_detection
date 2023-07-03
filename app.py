@@ -120,7 +120,8 @@ def process_uploaded_image(uploaded_file):
         return False
 
     output_filepath=os.path.join(os.getcwd(),"cache/detect",fileName)
-    # st.info("If bounding boxes are not visible, go to edit tab")
+    st.warning("If image is not fully visible, click on the process again. This warning is due to streamlit. The size of component is not predefined.")
+
     handle_last_detection_edit(uploaded_file,key="last-detection")
     return True
 
@@ -136,8 +137,7 @@ def handle_detection_ui():
 
         # saving this file to a temporary location
         response = process_uploaded_image(uploaded_file)
-        st.caption("If bounding boxes are not visible, go to edit tab")
-
+        
         if response:
             st.success("Image processed successfully")
         
