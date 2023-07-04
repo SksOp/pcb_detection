@@ -119,10 +119,13 @@ def process_uploaded_image(uploaded_file):
     if not reponse:
         return False
 
-    output_filepath=os.path.join(os.getcwd(),"cache/detect",fileName)
-    st.warning("If image is not fully visible, click on the process again. This warning is due to streamlit. The size of component is not predefined.")
-
-    handle_last_detection_edit(uploaded_file,key="last-detection")
+    output_filepath=os.path.join(os.getcwd(),"cache/detect/labels",fileName.replace(fileExtension,"txt"))
+    responseFromModel,preview = st.tabs(["Response From Model","Preview"])
+    with responseFromModel:
+        st.markdown("### Successfully processed the image")
+        st.success("Go to preview tab to see the output")
+    with preview:
+        handle_last_detection_edit(uploaded_file,key="last-detection")
     return True
 
 
@@ -138,8 +141,8 @@ def handle_detection_ui():
         # saving this file to a temporary location
         response = process_uploaded_image(uploaded_file)
         
-        if response:
-            st.success("Image processed successfully")
+        # if response:
+            # st.success("Image processed successfully")
         
     with col2:
         if not response and uploaded_file:
